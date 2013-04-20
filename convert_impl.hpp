@@ -18,8 +18,7 @@ public:
 	typedef std::basic_string<char_type> string_type;
 
 	converter( string_type const& text )
-	: m_buffer()
-	, m_text( text.c_str() )
+	: m_text( text.c_str() )
 	, m_length( text.size() )
 	{
 	}
@@ -41,13 +40,6 @@ public:
 
 #ifdef HAS_MOVE_SEMANTICS
 
-	converter( this_type&& rhs )
-	: m_buffer( std::move( rhs.m_buffer ) )
-	, m_text( std::move( rhs.m_text ) )
-	, m_length( std::move( rhs.m_length ) )
-	{
-	}
-
 #ifdef CHECK_BACKWARD_COMPATIBILITY
 private:
 	// Following constructors are not allowed before we have C++11 support on all target platforms
@@ -55,6 +47,12 @@ private:
 	template <typename CT, typename T>
 	friend converter<CT> convert( T&& text );
 #endif
+	converter( this_type&& rhs )
+	: m_buffer( std::move( rhs.m_buffer ) )
+	, m_text( std::move( rhs.m_text ) )
+	, m_length( std::move( rhs.m_length ) )
+	{
+	}
  
 	converter( string_type&& text )
 	: m_buffer( std::move( text ) )
