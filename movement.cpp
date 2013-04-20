@@ -85,14 +85,17 @@ CharT const* c_str_ptr( convert<CharT>&& c )
 	return c.c_str();
 }
  
+//#define DECL( TYPE, NAME ) auto const NAME = TYPE
+#define DECL( TYPE, NAME ) TYPE const NAME
+
 template <class SrcT>
 void conversion_test( std::basic_string<SrcT> const& s1, std::basic_string<SrcT> const& s2 )
 {
 	std::cout << "This is ok: " << c_str_ptr( convert<char>( s1 ) ) << std::endl;
 	std::cout << "This is ok: " << c_str_ptr( convert<char>( s1 + s2 ) ) << std::endl;
-	convert<char> const t1( s1 );
+	DECL( convert<char>, t1 )( s1 );
 	std::cout << "This is ok: " << c_str_ptr( t1 ) << std::endl;
-	convert<char> const t12( s1 + s2 );
+	DECL( convert<char>, t12 )( s1 + s2 );
 	std::cout << "Oooops!: " << c_str_ptr( t12 ) << std::endl;
 }
 
