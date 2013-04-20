@@ -6,7 +6,7 @@
 #include <boost/noncopyable.hpp>
 #include "./conversions.hpp"
 
-template <class CharT>
+template <typename CharT>
 class converter
 	: public boost::noncopyable
 {
@@ -24,13 +24,20 @@ public:
 	{
 	}
 
-	template <class T>
+	template <typename T>
 	converter( std::basic_string<T> const& text )
 		: m_buffer( do_conversion( text.c_str(), text.size() ) )
 		, m_text( m_buffer.c_str() )
 		, m_length( m_buffer.size() )
 	{
 	}
+
+	CharT const* c_str() const
+	{ 
+		return m_text; 
+	}
+ 
+	size_type length() const { return m_length; }
 
 #ifdef HAS_MOVE_SEMANTICS
 
@@ -41,19 +48,14 @@ public:
 	{
 	}
 
-	 	// This is not allowed before we have C++11 support on all target platforms
-	 	// (r-value string conversion must be performed within the same expression)
-		//return m_text; 
-#endif
-
-	CharT const* c_str() const
-	{ 
-		return m_text; 
-	}
- 
-	size_type length() const { return m_length; }
-
+#ifdef CHECK_BACKWARD_COMPATIBILITY
 private:
+	// Following constructors are not allowed before we have C++11 support on all target platforms
+	// (r-value string conversion must be performed within the same expression)
+	template <typename CT, typename T>
+	friend converter<CT> convert( T&& text );
+#endif
+ 
 	converter( string_type&& text )
 	: m_buffer( std::move( text ) )
 	, m_text( m_buffer.c_str() )
@@ -61,14 +63,14 @@ private:
 	{
 	}
 
-	template <class T>
+ 	template <class T>
 	converter( std::basic_string<T>&& text )
-		: converter( text )
+		// here we are intentionally not moving as we need the conversion anyway
+		: converter( text ) 
 	{
 	}
 
-	template <class CT, class T>
-	friend converter<CT> convert( T&& text );
+#endif // HAS_MOVE_SEMANTICS
 
 private:
 	string_type m_buffer;
@@ -76,10 +78,53 @@ private:
 	size_type m_length;
 };
 
-template <class CharT, class T>
-converter<CharT> convert( T&& text )
+#ifdef CHECK_BACKWARD_COMPATIBILITY
+
+template <typename CharT, typename T>
+inline converter<CharT> convert( T&& text )
 {
 	return converter<CharT>( std::forward<T>( text ) ); 
 } 
 
+#else // CHECK_BACKWARD_COMPATIBILITY
+
+#ifdef HAS_TEMPLATE_TYPEDEF
+
+template <typename CharT>
+using convert = converter<CharT>;
+
+#else // HAS_TEMPLATE_TYPEDEF
+
+// we can either use ugly preprocessor hack
+//# define convert converter
+
+// ... or do the constructor forwarding by hand
+ 
+template <typename CharT>
+class convert 
+	: public converter<CharT>
+{
+	typedef converter<CharT> base_type;
+public:
+	using typename base_type::char_type;
+	using typename base_type::size_type;
+	using typename base_type::this_type;
+	using typename base_type::string_type;
+
+	convert( string_type const& text )
+	: base_type( text )
+	{
+	}
+
+	template <typename T>
+	convert( std::basic_string<T> const& text )
+		: base_type( text )
+	{
+	}
+
+};
+
+#  endif // HAS_TEMPLATE_TYPEDEF
+#endif // CHECK_BACKWARD_COMPATIBILITY
+ 
 #endif // __CONVERT_IMPL_HPP__
