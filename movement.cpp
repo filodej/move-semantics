@@ -175,6 +175,17 @@ public:
 	{
 	}
 
+#ifdef HAS_MOVE_SEMANTICS
+
+	convert( string_type&& text )
+	: m_buffer( std::move( text ) )
+	, m_text( text.c_str() )
+		, m_length( text.size() )
+	{
+	}
+
+#endif
+ 
 	template <class T>
 	convert( std::basic_string<T> const& text )
 		: m_buffer( do_conversion( text.c_str(), text.size() ) )
