@@ -19,6 +19,11 @@ std::wstring do_conversion( char const* /*text*/, size_t /*length*/ )
 }
 
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
+//#  define CHECK_BACKWARD_COMPATIBILITY 
+#  define HAS_MOVE_SEMANTICS
+#endif
+
+#ifdef CHECK_BACKWARD_COMPATIBILITY
 
 template <class CharT>
 struct convert_lval
