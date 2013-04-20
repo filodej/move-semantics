@@ -42,6 +42,13 @@ public:
 	{
 	}
 
+	convert( this_type&& rhs )
+		: m_buffer( std::move( rhs.m_buffer ) )
+		, m_text( std::move( rhs.m_text ) )
+		, m_length( std::move( rhs.m_length ) )
+	{
+	}
+
 	template <class T>
 	convert( std::basic_string<T> const& text )
 		: m_buffer( do_conversion( text.c_str(), text.size() ) )
