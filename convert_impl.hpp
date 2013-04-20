@@ -17,51 +17,75 @@ public:
 	typedef convert this_type;
 	typedef std::basic_string<char_type> string_type;
 
-	convert( string_type const& text )
-		: m_text( text.c_str() )
-		, m_length( text.size() )
+	convert()
+		: m_text(0)
+		, m_length(0)
 	{
+	}
+
+	this_type const& operator()( string_type const& text ) const
+	{
+		m_text = text.c_str();
+		m_length = text.size();
+		return *this;
+	}
+
+	template <class T>
+	this_type const& operator()( std::basic_string<T> const& text ) const
+	{
+		m_buffer = do_conversion( text.c_str(), text.size() );
+	 	m_text = m_buffer.c_str();
+	 	m_length = m_buffer.size();
+		return *this;
 	}
 
 #ifdef HAS_MOVE_SEMANTICS
 
-	convert( string_type&& text )
-	: m_buffer( std::move( text ) )
-	, m_text( text.c_str() )
-		, m_length( text.size() )
+	this_type const& operator()( string_type&& text ) &&
 	{
+		m_buffer = std::move( text );
+		m_text = m_buffer.c_str();
+		m_length = text.size();
+		return *this;
+	}
+
+	this_type const& operator()( string_type&& ) const&
+	{
+	 	// This is not allowed before we have C++11 support on all target platforms
+	 	// (r-value string conversion must be performed within the same expression)
+		//return *this;
+	}
+
+	template <class T>
+	this_type const& operator()( std::basic_string<T>&& text ) &&
+	{
+		m_buffer = do_conversion( text.c_str(), text.size() );
+	 	m_text = m_buffer.c_str();
+	 	m_length = m_buffer.size();
+		return *this;
+	}
+
+	template <class T>
+	this_type const& operator()( std::basic_string<T>&& ) const&
+	{
+	 	// This is not allowed before we have C++11 support on all target platforms
+	 	// (r-value string conversion must be performed within the same expression)
+		//return *this;
 	}
 
 #endif
- 
-	template <class T>
-	convert( std::basic_string<T> const& text )
-		: m_buffer( do_conversion( text.c_str(), text.size() ) )
-		, m_text( m_buffer.c_str() )
-		, m_length( m_buffer.size() )
-	{
-	}
 
 	size_type length() const { return m_length; }
 
-private:
-	template <class T> 
-	friend T const* c_str_ptr( convert<T> const& );
+	CharT const* c_str() const
+	{ 
+		return m_text; 
+	}
 
-	CharT const* c_str() const { return m_text; }
-
 private:
-	string_type m_buffer;
-	char_type const* m_text;
-	size_type m_length;
+	mutable string_type m_buffer;
+	mutable char_type const* m_text;
+	mutable size_type m_length;
 };
  
-template <class CharT>
-CharT const* c_str_ptr( convert<CharT> const& c )
-{
-	return c.c_str();
-}
- 
-#define CONVERT_DECL( TYPE, NAME ) TYPE const NAME
-
 #endif // __CONVERT_IMPL_HPP__
