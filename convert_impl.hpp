@@ -73,9 +73,9 @@ private:  // make this class noncopyable
 	const converter& operator=( converter const& );
 
 private:
-	string_type m_buffer;
-	char_type const* m_text;
-	size_type m_length;
+	string_type const m_buffer;
+	char_type const* const m_text;
+	size_type const m_length;
 };
 
 #ifdef CHECK_BACKWARD_COMPATIBILITY
