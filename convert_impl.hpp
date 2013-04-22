@@ -3,12 +3,10 @@
 
 #include <cstddef>
 #include <string>
-#include <boost/noncopyable.hpp>
 #include "./conversions.hpp"
 
 template <typename CharT>
 class converter
-	: public boost::noncopyable
 {
 public:
 	typedef CharT char_type;
@@ -69,6 +67,10 @@ private:
 	}
 
 #endif // HAS_MOVE_SEMANTICS
+
+private:  // make this class noncopyable
+	converter( const converter& );
+	const converter& operator=( converter const& );
 
 private:
 	string_type m_buffer;
