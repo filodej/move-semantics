@@ -16,8 +16,8 @@ public:
 	typedef std::basic_string<char_type> string_type;
 
 	converter( string_type const& text )
-	: m_text( text.c_str() )
-	, m_length( text.size() )
+		: m_text( text.c_str() )
+		, m_length( text.size() )
 	{
 	}
 
@@ -46,16 +46,16 @@ private:
 	friend converter<CT> convert( T&& text );
 #endif
 	converter( this_type&& rhs )
-	: m_buffer( std::move( rhs.m_buffer ) )
-	, m_text( std::move( rhs.m_text ) )
-	, m_length( std::move( rhs.m_length ) )
+		: m_buffer( std::move( rhs.m_buffer ) )
+		, m_text( std::move( rhs.m_text ) )
+		, m_length( std::move( rhs.m_length ) )
 	{
 	}
  
 	converter( string_type&& text )
-	: m_buffer( std::move( text ) )
-	, m_text( m_buffer.c_str() )
-	, m_length( text.size() )
+		: m_buffer( std::move( text ) )
+		, m_text( m_buffer.c_str() )
+		, m_length( text.size() )
 	{
 	}
 
@@ -112,7 +112,7 @@ public:
 	using typename base_type::string_type;
 
 	convert( string_type const& text )
-	: base_type( text )
+		: base_type( text )
 	{
 	}
 
