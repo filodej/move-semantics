@@ -1,12 +1,12 @@
-TARGET = movement
+TARGET = convert
 LIBS = -lstdc++ -lm -ldl
 #-lmudflap
-CC = clang
-CFLAGS = -O0 -g3 -ggdb3 -Wall -Wextra -Werror -ansi -pedantic -pedantic-errors -std=c++11
+CC = gcc
+CFLAGS = -O0 -g3 -ggdb3 -Wall -Wextra -Werror -ansi -pedantic -pedantic-errors -std=c++0x
 #-fmudflap -fbounds-check
 #
-HEADERS = convert.hpp convert_check.hpp convert_impl.hpp conversions.hpp
-OBJECTS = movement.o
+HEADERS = convert.hpp convert_impl.hpp conversions.hpp
+OBJECTS = main.o
 
 default: $(TARGET)
 all: default
