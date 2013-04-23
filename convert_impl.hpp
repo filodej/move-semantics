@@ -23,18 +23,14 @@ public:
 
 	template <typename T>
 	converter( std::basic_string<T> const& text )
-		: m_buffer( do_conversion( text.c_str(), text.size() ) )
+		: m_buffer( do_conversion( text ) )
 		, m_text( m_buffer.c_str() )
 		, m_length( m_buffer.size() )
 	{
 	}
 
-	CharT const* c_str() const
-	{ 
-		return m_text; 
-	}
- 
-	size_type length() const { return m_length; }
+	char_type const* c_str() const { return m_text; }
+ 	size_type length() const { return m_length; }
 
 #ifdef HAS_MOVE_SEMANTICS
 
@@ -53,16 +49,15 @@ private:
 	}
  
 	converter( string_type&& text )
-		: m_buffer( std::move( text ) )
+		: m_buffer( std::move( text ) ) // here we grab'n'reuse the source buffer
 		, m_text( m_buffer.c_str() )
-		, m_length( text.size() )
+		, m_length( m_buffer.size() )
 	{
 	}
 
  	template <class T>
 	converter( std::basic_string<T>&& text )
-		// here we are intentionally not moving as we need the conversion anyway
-		: converter( text ) 
+		: converter( text ) // here we cannot move, we have to do the conversion anyway
 	{
 	}
 
@@ -73,9 +68,9 @@ private:  // make this class noncopyable
 	const converter& operator=( converter const& );
 
 private:
-	string_type const m_buffer;
-	char_type const* const m_text;
-	size_type const m_length;
+	string_type const m_buffer;    // temporary buffer used for conversion
+	char_type const* const m_text; // pointer to zero terminated output string
+	size_type const m_length;      // size of the output string
 };
 
 #ifdef CHECK_BACKWARD_COMPATIBILITY

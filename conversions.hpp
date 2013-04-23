@@ -3,14 +3,14 @@
 
 #include <string>
 
-std::string do_conversion( wchar_t const* /*text*/, size_t /*length*/ )
+std::string do_conversion( std::wstring const& /*text*/ )
 {
 	return std::string();
 //	std::wstring_convert<std::codecvt_utf8<wchar_t>> utf8_conv;
 //	return utf8_conv.to_bytes(str);
 }
 
-std::wstring do_conversion( char const* /*text*/, size_t /*length*/ )
+std::wstring do_conversion( std::string const& /*text*/ )
 {
 	return std::wstring();
 //	std::wstring_convert<std::codecvt_utf8<wchar_t>> utf8_conv;
